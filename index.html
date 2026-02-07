@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#8b5a3c">
+  <meta name="description" content="Daily Grace Planner - A spiritual task management app">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Daily Grace">
+  <link rel="manifest" href="manifest.json">
+  <title>Daily Grace Planner</title>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400;700&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: 'Lato', sans-serif;
+      background: linear-gradient(135deg, #f5f1e8 0%, #e8dcc8 100%);
+      min-height: 100vh;
+      overscroll-behavior: none;
+    }
+    
+    .planner-app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
+      border-radius: 20px;
+      padding: 25px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(107, 68, 35, 0.3);
+      animation: slideDown 0.6s ease-out;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .spiritual-content {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .saint-section, .verse-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .saint-section { margin-bottom: 20px; }
+    
+    .verse-section {
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      padding-top: 20px;
+    }
+    
+    .saint-icon, .verse-icon {
+      width: 45px;
+      height: 45px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+      font-size: 24px;
+    }
+    
+    .saint-info h3 {
+      font-family: 'Crimson Text', serif;
+      color: #fff;
+      font-size: 22px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    
+    .saint-info p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    .verse-text {
+      font-family: 'Crimson Text', serif;
+      font-size: 18px;
+      color: #fff;
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    
+    .verse-reference {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    
+    .nav-tab {
+      background: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #6b4423;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-size: 14px;
+    }
+    
+    .nav-tab.active {
+      background: #8b5a3c;
+      color: #fff;
+      box-shadow: 0 5px 15px rgba(139, 90, 60, 0.3);
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      animation: fadeIn 0.6s ease-out 0.2s both;
+    }
+    
+    @media (min-width: 768px) {
+      .main-content { grid-template-columns: 1fr 350px; }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .calendar-section, .daily-view, .filtered-view, .recurring-section {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    
+    .calendar-title {
+      font-family: 'Crimson Text', serif;
+      font-size: 24px;
+      color: #6b4423;
+      font-weight: 600;
+    }
+    
+    .calendar-controls {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    
+    .calendar-btn {
+      background: #f5f1e8;
+      border: none;
+      min-width: 40px;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #6b4423;
+      transition: all 0.3s ease;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .calendar-btn:active {
+      background: #8b5a3c;
+      color: #fff;
+    }
+    
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    
+    .weekday {
+      text-align: center;
+      font-weight: 700;
+      color: #8b5a3c;
+      font-size: 12px;
+      padding: 8px 0;
+    }
+    
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+    
+    .calendar-day {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      padding: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #fafafa;
+      border: 2px solid transparent;
+      display: flex;
+      flex-direction: column;
+      min-height: 60px;
+    }
+    
+    .calendar-day:active { transform: scale(0.95); }
+    .calendar-day.empty { cursor: default; background: transparent; }
+    
+    .calendar-day.today {
+      background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
+      color: #fff;
+    }
+    
+    .calendar-day.today .day-number { color: #fff; }
+    
+    .calendar-day.selected {
+      border-color: #8b5a3c;
+      box-shadow: 0 0 0 3px rgba(139, 90, 60, 0.2);
+    }
+    
+    .calendar-day.holiday {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+      color: #fff;
+    }
+    
+    .calendar-day.holiday .day-number,
+    .calendar-day.holiday .holiday-name { color: #fff; }
+    
+    .day-number {
+      font-weight: 700;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+    
+    .holiday-name {
+      font-size: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    .task-dots {
+      display: flex;
+      gap: 2px;
+      margin-top: auto;
+      flex-wrap: wrap;
+    }
+    
+    .task-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #8b5a3c;
+    }
+    
+    .task-dot.completed { background: #4caf50; }
+    
+    .more-tasks {
+      font-size: 8px;
+      font-weight: 600;
+    }
+    
+    .recurring-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .recurring-header h3 {
+      font-family: 'Crimson Text', serif;
+      color: #6b4423;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .recurring-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .recurring-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #fafafa;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    
+    .recurring-item:active { background: #f5f1e8; }
+    
+    .recurring-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #8b5a3c;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    
+    .recurring-checkbox.checked { background: #8b5a3c; }
+    
+    .recurring-name {
+      flex: 1;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .recurring-name.checked {
+      text-decoration: line-through;
+      color: #999;
+    }
+    
+    .daily-header, .filtered-header {
+      margin-bottom: 20px;
+    }
+    
+    .daily-header h2, .filtered-view h2 {
+      font-family: 'Crimson Text', serif;
+      color: #6b4423;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .add-task-btn {
+      background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      width: 100%;
+      font-size: 15px;
+    }
+    
+    .add-task-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .tasks-section, .tasks-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .tasks-section h3 {
+      color: #6b4423;
+      font-size: 18px;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    
+    .task-card {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 15px;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+    
+    .task-card:active { border-color: #8b5a3c; }
+    .task-card.completed { opacity: 0.7; }
+    
+    .task-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .task-checkbox {
+      width: 26px;
+      height: 26px;
+      border: 2px solid #8b5a3c;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .checkbox-empty {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .task-content {
+      flex: 1;
+    }
+    
+    .task-content h4 {
+      color: #333;
+      font-size: 16px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    
+    .task-content h4.completed {
+      text-decoration: line-through;
+      color: #999;
+    }
+    
+    .task-notes {
+      color: #666;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    
+    .task-type, .task-date {
+      display: inline-block;
+      background: #8b5a3c;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    
+    .icon-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: none;
+      background: #f5f1e8;
+      color: #6b4423;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+    
+    .icon-btn:active { background: #8b5a3c; color: #fff; }
+    .icon-btn.delete:active { background: #ff6b6b; }
+    
+    .diary-summary {
+      margin-top: 20px;
+      padding: 15px;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border-radius: 12px;
+    }
+    
+    .diary-summary h3 {
+      color: #2e7d32;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+    
+    .diary-summary p {
+      color: #1b5e20;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease-out;
+      padding: 20px;
+    }
+    
+    .modal {
+      background: #fff;
+      border-radius: 20px;
+      padding: 25px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal h3 {
+      font-family: 'Crimson Text', serif;
+      color: #6b4423;
+      font-size: 22px;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #6b4423;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e8dcc8;
+      border-radius: 10px;
+      font-family: 'Lato', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #8b5a3c;
+    }
+    
+    .form-group textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
+      color: #fff;
+    }
+    
+    .btn-primary:active { transform: scale(0.98); }
+    
+    .btn-secondary {
+      background: #e8dcc8;
+      color: #6b4423;
+    }
+    
+    .btn-secondary:active { background: #d4c4a8; }
+    
+    .no-tasks {
+      text-align: center;
+      color: #999;
+      padding: 30px 15px;
+      font-style: italic;
+      font-size: 14px;
+    }
+    
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-size: 22px;
+      color: #6b4423;
+      font-family: 'Crimson Text', serif;
+    }
+    
+    .install-prompt {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      background: #8b5a3c;
+      color: #fff;
+      padding: 15px 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      z-index: 2000;
+      animation: slideUp 0.3s ease-out;
+    }
+    
+    .install-prompt p {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    
+    .install-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .install-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    const DailyGracePlanner = () => {
+      const [currentDate, setCurrentDate] = useState(new Date());
+      const [selectedDate, setSelectedDate] = useState(new Date());
+      const [tasks, setTasks] = useState([]);
+      const [recurringTasks, setRecurringTasks] = useState([]);
+      const [view, setView] = useState('calendar');
+      const [showTaskModal, setShowTaskModal] = useState(false);
+      const [newTask, setNewTask] = useState({ title: '', notes: '', type: 'daily', date: new Date() });
+      const [showRecurringModal, setShowRecurringModal] = useState(false);
+      const [newRecurring, setNewRecurring] = useState('');
+      const [saintOfDay, setSaintOfDay] = useState(null);
+      const [bibleVerse, setBibleVerse] = useState(null);
+      const [loading, setLoading] = useState(true);
+      const [editingTask, setEditingTask] = useState(null);
+      const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+      const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+      const defaultRecurringTasks = [
+        'Medicine', 'Bible Reading', 'Holy Mass', 'Rosary', 
+        'Exercise', 'Watering the Plants'
+      ];
+
+      const nationalHolidays = {
+        '2026-01-26': 'Republic Day',
+        '2026-03-14': 'Holi',
+        '2026-04-02': 'Good Friday',
+        '2026-04-06': 'Mahavir Jayanti',
+        '2026-04-14': 'Dr. Ambedkar Jayanti',
+        '2026-08-15': 'Independence Day',
+        '2026-10-02': 'Gandhi Jayanti',
+        '2026-10-24': 'Dussehra',
+        '2026-11-12': 'Diwali',
+        '2026-11-27': 'Guru Nanak Jayanti',
+        '2026-12-25': 'Christmas'
+      };
+
+      const keralaHolidays = {
+        '2026-01-14': 'Makar Sankranti',
+        '2026-04-14': 'Vishu',
+        '2026-08-15': 'Onam (Thiruvonam)',
+        '2026-09-05': 'Onam',
+        '2026-11-01': 'Kerala Piravi'
+      };
+
+      useEffect(() => {
+        loadData();
+        checkDailyReminder();
+        fetchSpiritualContent();
+        
+        // PWA install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          setDeferredPrompt(e);
+          setShowInstallPrompt(true);
+        });
+      }, []);
+
+      const handleInstallClick = async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        setDeferredPrompt(null);
+        setShowInstallPrompt(false);
+      };
+
+      const loadData = () => {
+        try {
+          const savedTasks = localStorage.getItem('tasks');
+          const savedRecurring = localStorage.getItem('recurring-tasks');
+          
+          if (savedTasks) {
+            setTasks(JSON.parse(savedTasks));
+          }
+          
+          if (savedRecurring) {
+            setRecurringTasks(JSON.parse(savedRecurring));
+          } else {
+            setRecurringTasks(defaultRecurringTasks.map(name => ({ name, checked: false })));
+          }
+          
+          setLoading(false);
+        } catch (error) {
+          console.error('Error loading data:', error);
+          setRecurringTasks(defaultRecurringTasks.map(name => ({ name, checked: false })));
+          setLoading(false);
+        }
+      };
+
+      const saveTasks = (updatedTasks) => {
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+        setTasks(updatedTasks);
+      };
+
+      const saveRecurringTasks = (updatedRecurring) => {
+        localStorage.setItem('recurring-tasks', JSON.stringify(updatedRecurring));
+        setRecurringTasks(updatedRecurring);
+      };
+
+      const checkDailyReminder = () => {
+        const now = new Date();
+        const lastCheck = localStorage.getItem('lastReminderCheck');
+        const today = now.toDateString();
+        
+        if (lastCheck !== today && now.getHours() >= 7 && now.getMinutes() >= 30) {
+          const todayTasks = getTasksForDate(new Date());
+          const message = todayTasks.length > 0 
+            ? `Good morning! You have ${todayTasks.length} task(s) for today.`
+            : "Good morning! No tasks scheduled for today.";
+          
+          if (document.hasFocus()) {
+            alert(message);
+          }
+          localStorage.setItem('lastReminderCheck', today);
+        }
+      };
+
+      const fetchSpiritualContent = () => {
+        setSaintOfDay({
+          name: "St. Thomas the Apostle",
+          feast: "Patron Saint of India",
+          description: "Apostle who brought Christianity to India"
+        });
+        
+        setBibleVerse({
+          text: "I can do all things through Christ who strengthens me.",
+          reference: "Philippians 4:13"
+        });
+      };
+
+      const getDaysInMonth = (date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+        
+        return { daysInMonth, startingDayOfWeek };
+      };
+
+      const formatDate = (date) => {
+        return date.toISOString().split('T')[0];
+      };
+
+      const isSameDay = (date1, date2) => {
+        return formatDate(date1) === formatDate(date2);
+      };
+
+      const isToday = (date) => {
+        return isSameDay(date, new Date());
+      };
+
+      const getTasksForDate = (date) => {
+        return tasks.filter(task => isSameDay(new Date(task.date), date));
+      };
+
+      const getHolidayForDate = (date) => {
+        const dateStr = formatDate(date);
+        return nationalHolidays[dateStr] || keralaHolidays[dateStr] || null;
+      };
+
+      const addTask = () => {
+        if (!newTask.title.trim()) return;
+        
+        const task = {
+          id: Date.now(),
+          title: newTask.title,
+          notes: newTask.notes,
+          type: newTask.type,
+          date: formatDate(newTask.date),
+          completed: false,
+          createdAt: new Date().toISOString()
+        };
+        
+        saveTasks([...tasks, task]);
+        setNewTask({ title: '', notes: '', type: 'daily', date: new Date() });
+        setShowTaskModal(false);
+      };
+
+      const updateTask = () => {
+        if (!editingTask || !editingTask.title.trim()) return;
+        
+        const updatedTasks = tasks.map(task => 
+          task.id === editingTask.id ? editingTask : task
+        );
+        
+        saveTasks(updatedTasks);
+        setEditingTask(null);
+      };
+
+      const toggleTaskComplete = (taskId) => {
+        const updatedTasks = tasks.map(task => 
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        );
+        saveTasks(updatedTasks);
+      };
+
+      const deleteTask = (taskId) => {
+        if (confirm('Delete this task?')) {
+          const updatedTasks = tasks.filter(task => task.id !== taskId);
+          saveTasks(updatedTasks);
+        }
+      };
+
+      const addRecurringTask = () => {
+        if (!newRecurring.trim()) return;
+        
+        const updated = [...recurringTasks, { name: newRecurring, checked: false }];
+        saveRecurringTasks(updated);
+        setNewRecurring('');
+        setShowRecurringModal(false);
+      };
+
+      const toggleRecurringTask = (index) => {
+        const updated = recurringTasks.map((task, i) => 
+          i === index ? { ...task, checked: !task.checked } : task
+        );
+        saveRecurringTasks(updated);
+      };
+
+      const deleteRecurringTask = (index) => {
+        if (confirm('Delete this recurring task?')) {
+          const updated = recurringTasks.filter((_, i) => i !== index);
+          saveRecurringTasks(updated);
+        }
+      };
+
+      const renderCalendar = () => {
+        const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
+        const days = [];
+        
+        for (let i = 0; i < startingDayOfWeek; i++) {
+          days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
+        }
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+          const dayTasks = getTasksForDate(date);
+          const holiday = getHolidayForDate(date);
+          const isCurrentDay = isToday(date);
+          const isSelected = isSameDay(date, selectedDate);
+          
+          days.push(
+            <div
+              key={day}
+              onClick={() => {
+                setSelectedDate(date);
+                setNewTask({ ...newTask, date });
+              }}
+              className={`calendar-day ${isCurrentDay ? 'today' : ''} ${isSelected ? 'selected' : ''} ${holiday ? 'holiday' : ''}`}
+            >
+              <div className="day-number">{day}</div>
+              {holiday && <div className="holiday-name">{holiday}</div>}
+              {dayTasks.length > 0 && (
+                <div className="task-dots">
+                  {dayTasks.slice(0, 3).map((task, i) => (
+                    <div key={i} className={`task-dot ${task.completed ? 'completed' : ''}`} />
+                  ))}
+                  {dayTasks.length > 3 && <span className="more-tasks">+{dayTasks.length - 3}</span>}
+                </div>
+              )}
+            </div>
+          );
+        }
+        
+        return days;
+      };
+
+      const renderDailyView = () => {
+        const dayTasks = getTasksForDate(selectedDate);
+        const completedTasks = dayTasks.filter(t => t.completed);
+        const incompleteTasks = dayTasks.filter(t => !t.completed);
+        
+        return (
+          <div className="daily-view">
+            <div className="daily-header">
+              <h2>{selectedDate.toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h2>
+              <button onClick={() => setShowTaskModal(true)} className="add-task-btn">
+                + Add Task
+              </button>
+            </div>
+            
+            <div className="tasks-section">
+              {dayTasks.length === 0 ? (
+                <p className="no-tasks">No tasks for this day. Click "Add Task" to create one.</p>
+              ) : (
+                <>
+                  {incompleteTasks.map(task => (
+                    <div key={task.id} className="task-card">
+                      <div className="task-header">
+                        <button onClick={() => toggleTaskComplete(task.id)} className="task-checkbox">
+                          {task.completed ? '✓' : <div className="checkbox-empty" />}
+                        </button>
+                        <div className="task-content">
+                          <h4 className={task.completed ? 'completed' : ''}>{task.title}</h4>
+                          {task.notes && <p className="task-notes">{task.notes}</p>}
+                          <span className="task-type">{task.type}</span>
+                        </div>
+                        <div className="task-actions">
+                          <button onClick={() => setEditingTask(task)} className="icon-btn">✎</button>
+                          <button onClick={() => deleteTask(task.id)} className="icon-btn delete">✕</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {completedTasks.length > 0 && (
+                    <>
+                      <h3 style={{color: '#4caf50'}}>Completed</h3>
+                      {completedTasks.map(task => (
+                        <div key={task.id} className="task-card completed">
+                          <div className="task-header">
+                            <button onClick={() => toggleTaskComplete(task.id)} className="task-checkbox">✓</button>
+                            <div className="task-content">
+                              <h4 className="completed">{task.title}</h4>
+                              {task.notes && <p className="task-notes">{task.notes}</p>}
+                            </div>
+                            <button onClick={() => deleteTask(task.id)} className="icon-btn delete">✕</button>
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+            
+            {isToday(selectedDate) && (
+              <div className="diary-summary">
+                <h3>Today's Summary</h3>
+                <p>Completed: {completedTasks.length} / {dayTasks.length} tasks</p>
+                {incompleteTasks.length > 0 && (
+                  <p style={{marginTop: '8px', fontStyle: 'italic'}}>
+                    Incomplete: {incompleteTasks.map(t => t.title).join(', ')}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      const renderFilteredView = (type) => {
+        const filteredTasks = tasks.filter(task => task.type === type);
+        
+        return (
+          <div className="filtered-view">
+            <h2>{type.charAt(0).toUpperCase() + type.slice(1)} Goals</h2>
+            <button onClick={() => {
+              setNewTask({ ...newTask, type });
+              setShowTaskModal(true);
+            }} className="add-task-btn">
+              + Add {type} Goal
+            </button>
+            
+            <div className="tasks-grid">
+              {filteredTasks.length === 0 ? (
+                <p className="no-tasks">No {type} goals yet.</p>
+              ) : (
+                filteredTasks.map(task => (
+                  <div key={task.id} className="task-card">
+                    <div className="task-header">
+                      <button onClick={() => toggleTaskComplete(task.id)} className="task-checkbox">
+                        {task.completed ? '✓' : <div className="checkbox-empty" />}
+                      </button>
+                      <div className="task-content">
+                        <h4 className={task.completed ? 'completed' : ''}>{task.title}</h4>
+                        {task.notes && <p className="task-notes">{task.notes}</p>}
+                        <span className="task-date">{new Date(task.date).toLocaleDateString('en-IN')}</span>
+                      </div>
+                      <div className="task-actions">
+                        <button onClick={() => setEditingTask(task)} className="icon-btn">✎</button>
+                        <button onClick={() => deleteTask(task.id)} className="icon-btn delete">✕</button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      if (loading) {
+        return <div className="loading">Loading your planner...</div>;
+      }
+
+      return (
+        <div className="planner-app">
+          <div className="header">
+            <div className="spiritual-content">
+              {saintOfDay && (
+                <div className="saint-section">
+                  <div className="saint-icon">✝</div>
+                  <div className="saint-info">
+                    <h3>{saintOfDay.name}</h3>
+                    <p>{saintOfDay.feast}</p>
+                    <p>{saintOfDay.description}</p>
+                  </div>
+                </div>
+              )}
+              
+              {bibleVerse && (
+                <div className="verse-section">
+                  <div className="verse-icon">📖</div>
+                  <div className="verse-content">
+                    <div className="verse-text">"{bibleVerse.text}"</div>
+                    <div className="verse-reference">— {bibleVerse.reference}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="nav-tabs">
+            <button className={`nav-tab ${view === 'calendar' ? 'active' : ''}`} onClick={() => setView('calendar')}>
+              📅 Calendar
+            </button>
+            <button className={`nav-tab ${view === 'daily' ? 'active' : ''}`} onClick={() => setView('daily')}>
+              🔔 Daily
+            </button>
+            <button className={`nav-tab ${view === 'weekly' ? 'active' : ''}`} onClick={() => setView('weekly')}>
+              Weekly
+            </button>
+            <button className={`nav-tab ${view === 'monthly' ? 'active' : ''}`} onClick={() => setView('monthly')}>
+              Monthly
+            </button>
+          </div>
+          
+          <div className="main-content">
+            <div>
+              {view === 'calendar' && (
+                <div className="calendar-section">
+                  <div className="calendar-header">
+                    <h2 className="calendar-title">
+                      {currentDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                    </h2>
+                    <div className="calendar-controls">
+                      <button className="calendar-btn" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}>
+                        ‹
+                      </button>
+                      <button className="calendar-btn" onClick={() => setCurrentDate(new Date())}>
+                        Today
+                      </button>
+                      <button className="calendar-btn" onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}>
+                        ›
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="calendar-weekdays">
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                      <div key={day} className="weekday">{day}</div>
+                    ))}
+                  </div>
+                  
+                  <div className="calendar-grid">
+                    {renderCalendar()}
+                  </div>
+                </div>
+              )}
+              
+              {view === 'daily' && renderDailyView()}
+              {view === 'weekly' && renderFilteredView('weekly')}
+              {view === 'monthly' && renderFilteredView('monthly')}
+            </div>
+            
+            <div className="sidebar">
+              <div className="recurring-section">
+                <div className="recurring-header">
+                  <h3>Recurring Tasks</h3>
+                  <button className="icon-btn" onClick={() => setShowRecurringModal(true)}>+</button>
+                </div>
+                
+                <div className="recurring-list">
+                  {recurringTasks.map((task, index) => (
+                    <div key={index} className="recurring-item">
+                      <button
+                        className={`recurring-checkbox ${task.checked ? 'checked' : ''}`}
+                        onClick={() => toggleRecurringTask(index)}
+                      >
+                        {task.checked && '✓'}
+                      </button>
+                      <span className={`recurring-name ${task.checked ? 'checked' : ''}`}>
+                        {task.name}
+                      </span>
+                      <button className="icon-btn delete" onClick={() => deleteRecurringTask(index)}>✕</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {(showTaskModal || editingTask) && (
+            <div className="modal-overlay" onClick={() => { setShowTaskModal(false); setEditingTask(null); }}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <h3>{editingTask ? 'Edit Task' : 'Add New Task'}</h3>
+                
+                <div className="form-group">
+                  <label>Title *</label>
+                  <input
+                    type="text"
+                    value={editingTask ? editingTask.title : newTask.title}
+                    onChange={e => editingTask 
+                      ? setEditingTask({ ...editingTask, title: e.target.value })
+                      : setNewTask({ ...newTask, title: e.target.value })
+                    }
+                    placeholder="Enter task title"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Notes</label>
+                  <textarea
+                    value={editingTask ? editingTask.notes : newTask.notes}
+                    onChange={e => editingTask
+                      ? setEditingTask({ ...editingTask, notes: e.target.value })
+                      : setNewTask({ ...newTask, notes: e.target.value })
+                    }
+                    placeholder="Add any notes or details"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label>Type</label>
+                  <select
+                    value={editingTask ? editingTask.type : newTask.type}
+                    onChange={e => editingTask
+                      ? setEditingTask({ ...editingTask, type: e.target.value })
+                      : setNewTask({ ...newTask, type: e.target.value })
+                    }
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly Goal</option>
+                    <option value="monthly">Monthly Goal</option>
+                  </select>
+                </div>
+                
+                {!editingTask && (
+                  <div className="form-group">
+                    <label>Date</label>
+                    <input
+                      type="date"
+                      value={formatDate(newTask.date)}
+                      onChange={e => setNewTask({ ...newTask, date: new Date(e.target.value) })}
+                    />
+                  </div>
+                )}
+                
+                <div className="modal-actions">
+                  <button className="btn btn-secondary" onClick={() => { setShowTaskModal(false); setEditingTask(null); }}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-primary" onClick={editingTask ? updateTask : addTask}>
+                    {editingTask ? 'Update' : 'Add'} Task
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {showRecurringModal && (
+            <div className="modal-overlay" onClick={() => setShowRecurringModal(false)}>
+              <div className="modal" onClick={e => e.stopPropagation()}>
+                <h3>Add Recurring Task</h3>
+                
+                <div className="form-group">
+                  <label>Task Name *</label>
+                  <input
+                    type="text"
+                    value={newRecurring}
+                    onChange={e => setNewRecurring(e.target.value)}
+                    placeholder="Enter task name"
+                  />
+                </div>
+                
+                <div className="modal-actions">
+                  <button className="btn btn-secondary" onClick={() => setShowRecurringModal(false)}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-primary" onClick={addRecurringTask}>
+                    Add Task
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {showInstallPrompt && (
+            <div className="install-prompt">
+              <p>Install Daily Grace Planner on your device for easier access!</p>
+              <div className="install-buttons">
+                <button className="btn btn-secondary" onClick={() => setShowInstallPrompt(false)}>
+                  Not Now
+                </button>
+                <button className="btn btn-primary" onClick={handleInstallClick}>
+                  Install
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    };
+    
+    ReactDOM.render(<DailyGracePlanner />, document.getElementById('app'));
+  </script>
+  
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
+    }
+  </script>
+</body>
+</html>
